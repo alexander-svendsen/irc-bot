@@ -9,7 +9,7 @@ import threading #imports module allowing timing functions
 import thread
 
 
-#sets variables for connection to twitch chat
+#sets variables for connection to twitch chat s
 nick = 'segment_fault'
 channel = '#vinzet'
 server = 'irc.twitch.tv'
