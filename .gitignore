@@ -64,3 +64,5 @@ docs/_build/
 # Maven
 log/
 target/
+
+*.ini
