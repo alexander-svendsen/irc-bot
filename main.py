@@ -1,9 +1,12 @@
+import atexit
 from irc_client import *
 from config import *
 import ConfigParser
 import os.path
 
 Config = ConfigParser.ConfigParser()
+
+
 def ConfigSectionMap(section):
     dict1 = {}
     options = Config.options(section)
@@ -47,24 +50,21 @@ while not irc.connected:
     print "Waiting..."
     time.sleep(1)
 
-print "Connected!"
-
+time.sleep(5)
+print "Joining channel"
 irc.join_channel(CHANNEL)
+def exit_handler():
+    print 'My application is ending!'
+    irc.part()
+
+atexit.register(exit_handler)
 
 while True:
-    time.sleep(0.1)
+    time.sleep(1)
     for message in irc:
         print message
-        # if message.type == "PRIVMSG":
-        #     print message
-        #     if delaycount > 0:
-        #         delaycount -= 1
-        #         continue
-        #
-        #     command = message.message.split()[0]
-        #     if command == "!points":
-        #         irc.msg(channel, "{}: To check your points go to gamingforgood.net/profile".format(message.user))
-        #         delaycount = 20
+
+
 
 
 

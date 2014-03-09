@@ -12,7 +12,7 @@ import thread
 nick = 'segment_fault'
 channel = '#vinzet'
 server = 'irc.twitch.tv'
-password = 'oauth:p4b1x8acn90m7r0xlt2r9fcll6eq0qe'
+password = 'oauth:XXX'
 
 irc = socket.socket()
 irc.connect((server, 6667))  # connects to the server
@@ -32,11 +32,14 @@ print irc.recv(1024)
 thread.start_new(forever_print, ())
 time.sleep(5)
 #irc.send('USER ' + nick + ' 0 * :' + bot_owner + '\r\n')
+
+irc.send('NAMES ' + channel + '\r\n')
+print "-> NAMES " + channel
+
+time.sleep(4)
 irc.send('JOIN ' + channel + '\r\n')
 print "-> JOIN " + channel
 
-# irc.send('WHO ' + channel + '\r\n')
-# print "-> WHO " + channel
 
 while(True):
     time.sleep(1)

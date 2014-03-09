@@ -18,24 +18,25 @@ class TwitchIRCClient(threading.Thread):
         self.connected = False
         self.output = list()
         self.daemon = True
+        self._users = []
 
     def _connect(self):
         self._socket.connect(self.host)
         self.send("PASS {}".format(self.password))
         self.send("NICK {}".format(self.nick))
         self.connected = True
+        print "Connected"
 
     def disconnect(self):
         self.connected = False
         self._socket.close()
-        self.output.append("* Disconnected!\n")
+        self.output.append("* Disconnected!")
 
     # Method to handle incomming data
     def _receive(self):
-        #TODO: filesocket
         self._buffer += self._socket.recv(1024)
         temp = self._buffer.split("\n")
-        self._buffer = temp.pop() # why?
+        self._buffer = temp.pop()
 
         for line in temp:
             line = line.rstrip()
@@ -46,14 +47,31 @@ class TwitchIRCClient(threading.Thread):
 
             if line[0] == "PING":
                 self.send("PONG {}".format(line[1]))
+            if line[1] == '353':
+                #parsing out users
+                if len(line) >= 5:
+                    line[5] = line[5][1:]  # removing the ':'nick sign
+                    for user in line[5:]:
+                        if user != self.nick:
+                            self._users.append(user)
+                self.output.append("Currently found {} number of users!".format(len(self._users)))
 
-            try:
-                nick = line[0].split("!")[0][1:]
-                command = line[1]
-                channel = line[2]
-                message = " ".join(line[3:])[1:]
-            except IndexError, e:
-                continue
+            if "PART" in line:
+                nick = line[0].split('!')[0][1:]
+                if nick != self.nick:
+                    if nick in self._users:
+                        self._users.remove(nick)
+                    else:
+                        print "A user left that wasn't there"
+                self.output.append("User left: {} number of users!".format(len(self._users)))
+
+            if "JOIN" in line:
+                nick = line[0].split('!')[0][1:]
+                if nick != self.nick:
+                    self._users.append(nick)
+                    self.output.append("User Joined: {} number of users!".format(len(self._users)))
+
+
 
     def __iter__(self):
         return self
@@ -67,6 +85,7 @@ class TwitchIRCClient(threading.Thread):
         self.output = []
 
     def join_channel(self, channel):
+        self._channel = channel
         self.send("JOIN " + channel)
 
     def private_msg(self, name, msg):
@@ -86,6 +105,12 @@ class TwitchIRCClient(threading.Thread):
             else:
                 try:
                     self._receive()
-                except:
+                except Exception as e:
+                    print e
+                    print "WRONG STUFF HAPPENED"
                     self.disconnect()
                     time.sleep(5)
+
+    def part(self):
+        self.send("PART " + self._channel)
+
