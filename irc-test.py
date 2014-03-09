@@ -4,8 +4,7 @@ __author__ = 'Alexander'
 
 import time
 
-import socket #imports module allowing connection to IRC
-import threading #imports module allowing timing functions
+import socket
 import thread
 
 
@@ -13,10 +12,10 @@ import thread
 nick = 'segment_fault'
 channel = '#vinzet'
 server = 'irc.twitch.tv'
-password = 'oauth:xxxxxxxxxxxxxxx'
+password = 'oauth:p4b1x8acn90m7r0xlt2r9fcll6eq0qe'
 
 irc = socket.socket()
-irc.connect((server, 6667)) #connects to the server
+irc.connect((server, 6667))  # connects to the server
 
 
 def forever_print():

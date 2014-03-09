@@ -1,0 +1,3 @@
+
+TWITCH_SERVER_HOST = 'irc.twitch.tv'
+TWITCH_SERVER_PORT = 6667
